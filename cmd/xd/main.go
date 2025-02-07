@@ -12,22 +12,27 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"time"
 )
 
 var sAddr, vKey, name string
 
 var (
-	logLevel   = flag.String("log_level", "2", "log level 0~7")
+	logLevel   = flag.String("log_level", "7", "log level 0~7")
 	logPath    = flag.String("log_path", "", "npc log path")
 	serverInfo = flag.String("s", "", "server info")
 )
 
 func main() {
-	//  -s 192.168.5.48:8124|123455|name
+	//  -s=192.168.5.48:8024_zxw123455_name  -s 192.168.5.48:8024|zxw123456|武漢站1
 	flag.Parse()
 	fmt.Println("start...")
-
-	info := strings.SplitN(os.Getenv("s"), "_", -1)
+	s := os.Getenv("s")
+	if len(s) == 0 {
+		s = *serverInfo
+	}
+	//s = "58.19.115.33:58405_eduhy@20241126_xdxd"
+	info := strings.SplitN(s, "_", -1)
 	if len(info) != 3 {
 		return
 	}
@@ -137,8 +142,8 @@ auto_reconnection=true
 max_conn=500
 flow_limit=100000
 rate_limit=100000
-crypt=true
-compress=true
+crypt=false
+compress=false
 disconnect_timeout=60
 remark=[name]`
 
@@ -147,5 +152,6 @@ remark=[name]`
 	s = strings.ReplaceAll(s, "[vkey]", vKey)
 
 	go client.StartFromString(s)
+	time.Sleep(time.Second)
 
 }

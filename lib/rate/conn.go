@@ -1,15 +1,16 @@
 package rate
 
 import (
+	"github.com/donetkit/nps-client/lib/file"
 	"io"
 )
 
 type rateConn struct {
 	conn io.ReadWriteCloser
-	rate *Rate
+	rate *file.Rate
 }
 
-func NewRateConn(conn io.ReadWriteCloser, rate *Rate) io.ReadWriteCloser {
+func NewRateConn(conn io.ReadWriteCloser, rate *file.Rate) io.ReadWriteCloser {
 	return &rateConn{
 		conn: conn,
 		rate: rate,

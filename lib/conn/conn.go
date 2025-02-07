@@ -373,7 +373,7 @@ func SetUdpSession(sess *kcp.UDPSession) {
 }
 
 // conn1 mux conn
-func CopyWaitGroup(conn1, conn2 net.Conn, crypt bool, snappy bool, rate *rate.Rate,
+func CopyWaitGroup(conn1, conn2 net.Conn, crypt bool, snappy bool, rate *file.Rate,
 	flow *file.Flow, isServer bool, rb []byte, task *file.Tunnel) {
 	//var in, out int64
 	//var wg sync.WaitGroup
@@ -405,7 +405,7 @@ func CopyWaitGroup(conn1, conn2 net.Conn, crypt bool, snappy bool, rate *rate.Ra
 }
 
 // get crypt or snappy conn
-func GetConn(conn net.Conn, cpt, snappy bool, rt *rate.Rate, isServer bool) io.ReadWriteCloser {
+func GetConn(conn net.Conn, cpt, snappy bool, rt *file.Rate, isServer bool) io.ReadWriteCloser {
 	if cpt {
 		if isServer {
 			return rate.NewRateConn(crypt.NewTlsServerConn(conn), rt)

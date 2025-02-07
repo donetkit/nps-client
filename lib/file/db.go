@@ -10,7 +10,6 @@ import (
 
 	"github.com/donetkit/nps-client/lib/common"
 	"github.com/donetkit/nps-client/lib/crypt"
-	"github.com/donetkit/nps-client/lib/rate"
 )
 
 type DbUtils struct {
@@ -220,24 +219,27 @@ reset:
 		isNotSet = true
 		c.VerifyKey = crypt.GetRandomString(16)
 	}
-	if c.RateLimit == 0 {
-		c.Rate = rate.NewRate(int64(2 << 23))
-	} else if c.Rate == nil {
-		c.Rate = rate.NewRate(int64(c.RateLimit * 1024))
-	}
-	c.Rate.Start()
 	if !s.VerifyVkey(c.VerifyKey, c.Id) {
 		if isNotSet {
 			goto reset
 		}
 		return errors.New("Vkey duplicate, please reset")
 	}
+
 	if c.Id == 0 {
 		c.Id = int(s.JsonDb.GetClientId())
 	}
 	if c.Flow == nil {
 		c.Flow = new(Flow)
 	}
+
+	if c.RateLimit == 0 {
+		c.Rate = NewRate(int64(2<<23), c)
+	} else if c.Rate == nil {
+		c.Rate = NewRate(int64(c.RateLimit*1024), c)
+	}
+	c.Rate.Start()
+
 	s.JsonDb.Clients.Store(c.Id, c)
 	s.JsonDb.StoreClientsToJsonFile()
 	return nil
@@ -272,7 +274,7 @@ func (s *DbUtils) VerifyUserName(username string, id int) (res bool) {
 func (s *DbUtils) UpdateClient(t *Client) error {
 	s.JsonDb.Clients.Store(t.Id, t)
 	if t.RateLimit == 0 {
-		t.Rate = rate.NewRate(int64(2 << 23))
+		t.Rate = NewRate(int64(2<<23), t)
 		t.Rate.Start()
 	}
 	return nil

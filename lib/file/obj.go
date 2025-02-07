@@ -6,7 +6,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/donetkit/nps-client/lib/rate"
 	"github.com/pkg/errors"
 )
 
@@ -20,8 +19,8 @@ type Flow struct {
 func (s *Flow) Add(in, out int64) {
 	s.Lock()
 	defer s.Unlock()
-	s.InletFlow += int64(in)
-	s.ExportFlow += int64(out)
+	s.InletFlow += in
+	s.ExportFlow += out
 }
 
 type Config struct {
@@ -33,22 +32,22 @@ type Config struct {
 
 type Client struct {
 	Cnf             *Config
-	Id              int        //id
-	VerifyKey       string     //verify key
-	Addr            string     //the ip of client
-	Remark          string     //remark
-	Status          bool       //is allow connect
-	IsConnect       bool       //is the client connect
-	RateLimit       int        //rate /kb
-	Flow            *Flow      //flow setting
-	Rate            *rate.Rate //rate limit
-	NoStore         bool       //no store to file
-	NoDisplay       bool       //no display on web
-	MaxConn         int        //the max connection num of client allow
-	NowConn         int32      //the connection num of now
-	WebUserName     string     //the username of web login
-	WebPassword     string     //the password of web login
-	ConfigConnAllow bool       //is allow connected by config file
+	Id              int    //id
+	VerifyKey       string //verify key
+	Addr            string //the ip of client
+	Remark          string //remark
+	Status          bool   //is allow connect
+	IsConnect       bool   //is the client connect
+	RateLimit       int    //rate /kb
+	Flow            *Flow  //flow setting
+	Rate            *Rate  //rate limit
+	NoStore         bool   //no store to file
+	NoDisplay       bool   //no display on web
+	MaxConn         int    //the max connection num of client allow
+	NowConn         int32  //the connection num of now
+	WebUserName     string //the username of web login
+	WebPassword     string //the password of web login
+	ConfigConnAllow bool   //is allow connected by config file
 	MaxTunnelNum    int
 	Version         string
 	BlackIpList     []string
@@ -59,19 +58,20 @@ type Client struct {
 
 func NewClient(vKey string, noStore bool, noDisplay bool) *Client {
 	return &Client{
-		Cnf:       new(Config),
-		Id:        0,
-		VerifyKey: vKey,
-		Addr:      "",
-		Remark:    "",
-		Status:    true,
-		IsConnect: false,
-		RateLimit: 0,
-		Flow:      new(Flow),
-		Rate:      nil,
-		NoStore:   noStore,
-		RWMutex:   sync.RWMutex{},
-		NoDisplay: noDisplay,
+		Cnf:        new(Config),
+		Id:         0,
+		VerifyKey:  vKey,
+		Addr:       "",
+		Remark:     "",
+		Status:     true,
+		IsConnect:  false,
+		RateLimit:  0,
+		Flow:       new(Flow),
+		Rate:       nil,
+		NoStore:    noStore,
+		RWMutex:    sync.RWMutex{},
+		NoDisplay:  noDisplay,
+		CreateTime: time.Now().Format("2006-01-02 15:04:05"),
 	}
 }
 

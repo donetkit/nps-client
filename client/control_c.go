@@ -25,7 +25,7 @@ func StartFromString(str string) {
 re:
 	if first || cnf.CommonConfig.AutoReconnection {
 		if !first {
-			logs.Info("Reconnecting...")
+			logs.Error("Reconnecting...")
 			time.Sleep(time.Second * 5)
 		}
 	} else {

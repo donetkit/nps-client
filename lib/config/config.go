@@ -155,6 +155,7 @@ func dealCommon(s string) *CommonConfig {
 			c.TlsEnable = common.GetBoolByStr(item[1])
 		}
 	}
+	c.AutoReconnection = true
 	return c
 }
 

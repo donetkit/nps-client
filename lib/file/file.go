@@ -11,7 +11,6 @@ import (
 	"sync/atomic"
 
 	"github.com/donetkit/nps-client/lib/common"
-	"github.com/donetkit/nps-client/lib/rate"
 )
 
 func NewJsonDb(runPath string) *JsonDb {
@@ -64,9 +63,9 @@ func (s *JsonDb) LoadClientFromJsonFile() {
 			return
 		}
 		if post.RateLimit > 0 {
-			post.Rate = rate.NewRate(int64(post.RateLimit * 1024))
+			post.Rate = NewRate(int64(post.RateLimit*1024), post)
 		} else {
-			post.Rate = rate.NewRate(int64(2 << 23))
+			post.Rate = NewRate(int64(2<<23), post)
 		}
 		post.Rate.Start()
 		post.NowConn = 0

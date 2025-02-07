@@ -4,7 +4,6 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/donetkit/nps-client/lib/common"
 	"github.com/donetkit/nps-client/lib/file"
-	"github.com/donetkit/nps-client/lib/rate"
 	"github.com/donetkit/nps-client/server"
 	"strings"
 	"time"
@@ -143,13 +142,12 @@ func (s *ClientController) Edit() {
 				c.Rate.Stop()
 			}
 			if c.RateLimit > 0 {
-				c.Rate = rate.NewRate(int64(c.RateLimit * 1024))
-				c.Rate.Start()
+				c.Rate = file.NewRate(int64(c.RateLimit*1024), c)
 			} else {
-				c.Rate = rate.NewRate(int64(2 << 23))
-				c.Rate.Start()
-			}
+				c.Rate = file.NewRate(int64(2<<23), c)
 
+			}
+			c.Rate.Start()
 			c.BlackIpList = RemoveRepeatedElement(strings.Split(s.getEscapeString("blackiplist"), "\r\n"))
 			file.GetDb().JsonDb.StoreClientsToJsonFile()
 		}
